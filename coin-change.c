@@ -24,7 +24,7 @@ typedef struct {
     int** combinations;
 } coinChange;
 
-int change(int amount, int* coins, int coinsSize) {
+int changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
     if ((amount == *coins && amount == *(coins + coinsSize - 1)) || amount == 0) {
         return 1;
@@ -33,12 +33,16 @@ int change(int amount, int* coins, int coinsSize) {
     }
 
     // include Branch
-    int returnIncludeBranch = change(amount - coins[coinsSize - 1], coins, coinsSize);
+    int returnIncludeBranch = changeRecursive(amount - *(coins + coinsSize - 1), coins, coinsSize);
     
     // exclude Branch
-    int returnExcludeBranch = change(amount, coins, coinsSize - 1);
+    int returnExcludeBranch = changeRecursive(amount, coins, coinsSize - 1);
 
     return returnExcludeBranch + returnIncludeBranch;                               
+}
+
+int change(int amount, int* coins, int coinsSize) {
+                                
 }
 
 coinChange fillCombArrays(int numberCombinations, int* coins, int coinsSize) {
@@ -54,7 +58,7 @@ int main() {
     printarr(coins_ex1, coinsSize);
     printf("Expected: %d\n", expected);
 
-    int answerEx1 = change(amount, coins_ex1, coinsSize);
+    int answerEx1 = changeRecursive(amount, coins_ex1, coinsSize);
     printf("Answer: %d\n\n", answerEx1);
 
     amount = 3;
@@ -65,7 +69,7 @@ int main() {
     printarr(coins_ex2, coinsSize);
     printf("Expected: %d\n", expected);
 
-    int answerEx2 = change(amount, coins_ex2, coinsSize);
+    int answerEx2 = changeRecursive(amount, coins_ex2, coinsSize);
     printf("Answer: %d\n\n", answerEx2);
 
     amount = 10;
@@ -77,7 +81,7 @@ int main() {
     printf("Expected: %d\n", expected);
 
     
-    int answerEx3 = change(amount, coins_ex3, coinsSize);
+    int answerEx3 = changeRecursive(amount, coins_ex3, coinsSize);
     printf("Answer: %d\n\n", answerEx3);
 
     amount = 500;
@@ -89,7 +93,7 @@ int main() {
     printf("Expected: %d\n", expected);
 
     
-    int answerEx4 = change(amount, coins_ex4, coinsSize);
+    int answerEx4 = changeRecursive(amount, coins_ex4, coinsSize);
     printf("Answer: %d\n", answerEx4);
 }
 
