@@ -126,7 +126,7 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
         }
 
         i_ChangeGroup += numberGroupWithCurrentDenomMax;
-        ++changeGroup;
+        changeGroup += numberGroupWithCurrentDenomMax;
         --i_row;
     }
 
@@ -134,19 +134,15 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
     answerStruct->numberCombinations = numberCombinations;
     answerStruct->combinations = combArray; 
 
-    printf("%d, ", combArray[0][0]);
-    printf("%d\n", combArray[0][1]);
-    printf("%d, ", combArray[1][0]);
-    printf("%d\n", combArray[1][1]);
-    printf("%d, ", combArray[2][0]);
-    printf("%d\n", combArray[2][1]);
-    printf("%d, ", combArray[3][0]);
-    printf("%d\n", combArray[3][1]);
-
     return answerStruct;
 }
 
 void printAllComb (int amount) {
+    if (answerStruct->numberCombinations == 0) {
+        printf("[]\n\n");
+        return;
+    }
+
     for (int i = 0; i < answerStruct->numberCombinations; ++i) {
         printOneComb(*(answerStruct->combinations + i), amount);
     }
@@ -172,6 +168,7 @@ int main() {
     free(tabuArray);
     free(answerStruct->combinations);
     free(answerStruct);
+    
     amount = 3;
     int coins_ex2[] = {2};
     coinsSize = 1;
@@ -181,9 +178,15 @@ int main() {
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex2, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    answerStruct = fillCombArrays(answer, amount, coins_ex2, coinsSize);
+    printf("Answer:   %d\n", answer);
+    printf("Combinations:\n");
+    printAllComb(amount);
 
     free(tabuArray);
+    free(answerStruct->combinations);
+    free(answerStruct);
+    
     amount = 10;
     int coins_ex3[] = {10};
     coinsSize = 1;
@@ -194,13 +197,14 @@ int main() {
 
     answer = change(amount, coins_ex3, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex3, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    printf("Answer:   %d\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 
     free(tabuArray);
     free(answerStruct->combinations);
     free(answerStruct);
+    
     amount = 500;
     int coins_ex4[] = {3,5,7,8,9,10,11};
     coinsSize = 7;
@@ -213,6 +217,7 @@ int main() {
     printf("Answer:   %d\n\n", answer);
 
     free(tabuArray);
+    
     amount = 500;
     int coins_ex5[] = {1,2,5,10,100};
     coinsSize = 5;
@@ -225,6 +230,7 @@ int main() {
     printf("Answer:   %d\n\n", answer);
 
     free(tabuArray);
+    
     amount = 50;
     int coins_ex6[] = {1,2,5,10};
     coinsSize = 4;
@@ -234,9 +240,10 @@ int main() {
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex6, coinsSize);
-    printf("Answer:   %d\n", answer);
+    printf("Answer:   %d\n\n", answer);
 
     free(tabuArray);
+    
     amount = 7;
     int coins_ex7[] = {1,2,5,10};
     coinsSize = 4;
@@ -246,7 +253,13 @@ int main() {
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex6, coinsSize);
+    answerStruct = fillCombArrays(answer, amount, coins_ex7, coinsSize);
     printf("Answer:   %d\n", answer);
     printf("Combinations:\n");
+    printAllComb(amount);
+
+    free(tabuArray);
+    free(answerStruct->combinations);
+    free(answerStruct);
 }
 
