@@ -3,6 +3,14 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+typedef struct {
+    int numberCombinations;
+    int** combinations;
+} coinChange;
+
+coinChange* answerStruct = NULL;
+uint64_t** tabuArray = NULL;
+
 void printarr(int *arr, int size) {
     if (size == 0) {
         printf("[]\n");
@@ -21,10 +29,32 @@ void printarr(int *arr, int size) {
     }
 }
 
-typedef struct {
-    int numberCombinations;
-    int** combinations;
-} coinChange;
+void printOneComb(int *arr, int size) {
+    if (size == 0) {
+        printf("[]\n");
+        return;
+    }
+
+    for (int i = 0; i < size; i++) {
+        if (size == 1) {
+            printf("[%i]\n", arr[i]);
+        } else if (i == 0) {
+            printf("[%i", arr[i]);
+        } else if (i == size - 1 || arr[i] == 0) {
+            printf("]\n");
+            return;
+        } else {
+            printf(", %i", arr[i]);
+        }
+    }
+}
+
+void allocateTabuArray(int rows, int cols) {
+    tabuArray = (uint64_t**)calloc(rows, sizeof(uint64_t*));
+    for (uint64_t i = 0; i < rows; i++) {
+        tabuArray[i] = (uint64_t*)calloc(cols, sizeof(uint64_t));
+    }
+}
 
 int changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
@@ -43,12 +73,9 @@ int changeRecursive(int amount, int* coins, int coinsSize) {
 }
 
 int change(int amount, int* coins, int coinsSize) {
-    uint64_t cols = amount + 1;
-    uint64_t rows = coinsSize + 1;
-    uint64_t** tabuArray = (uint64_t**)calloc(rows, sizeof(uint64_t*));
-    for (uint64_t i = 0; i < rows; i++) {
-        tabuArray[i] = (uint64_t*)calloc(cols, sizeof(uint64_t));
-    }
+    const uint64_t cols = amount + 1;
+    const uint64_t rows = coinsSize + 1;
+    allocateTabuArray(rows, cols);
 
     for (uint64_t i = 0; i <= amount; ++i) {
         for (uint64_t j = 0; j <= coinsSize; ++j) {
@@ -70,12 +97,60 @@ int change(int amount, int* coins, int coinsSize) {
             }
         }
     }
+    
+    int sum = *(*(tabuArray + coinsSize) + amount);
 
-    return *(*(tabuArray + coinsSize) + amount);
+    return sum;
 }
 
-coinChange fillCombArrays(int numberCombinations, int* coins, int coinsSize) {
+coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int coinsSize) {
+    int rows = numberCombinations;
+    int cols = amount;
+    int** combArray = (int**)calloc(rows, sizeof(int*));
+    for (int i = 0; i < rows; i++) {
+        combArray[i] = (int*)calloc(cols, sizeof(int));
+    }
 
+    const uint64_t amountColumn = amount; 
+    int i_ChangeGroup = 0;
+    uint64_t i_row = coinsSize;
+    int changeGroup = 0;
+    int changeGroupPos = 0; 
+    while(i_ChangeGroup < numberCombinations) {
+        uint64_t currentChangeGroupCount = *(*(tabuArray + i_row) + amountColumn);
+        uint64_t belowChangeGroupCount = i_row - 1 > 0 ? *(*(tabuArray + i_row - 1) + amountColumn) : 0;
+        uint64_t numberGroupWithCurrentDenomMax = currentChangeGroupCount - belowChangeGroupCount;
+
+        for (int i = 0; i < numberGroupWithCurrentDenomMax; ++i) {
+            *(*(combArray + changeGroup + i) + changeGroupPos) = *(coins + i_row - 1);
+        }
+
+        i_ChangeGroup += numberGroupWithCurrentDenomMax;
+        ++changeGroup;
+        --i_row;
+    }
+
+    coinChange* answerStruct = malloc(sizeof(coinChange));
+    answerStruct->numberCombinations = numberCombinations;
+    answerStruct->combinations = combArray; 
+
+    printf("%d, ", combArray[0][0]);
+    printf("%d\n", combArray[0][1]);
+    printf("%d, ", combArray[1][0]);
+    printf("%d\n", combArray[1][1]);
+    printf("%d, ", combArray[2][0]);
+    printf("%d\n", combArray[2][1]);
+    printf("%d, ", combArray[3][0]);
+    printf("%d\n", combArray[3][1]);
+
+    return answerStruct;
+}
+
+void printAllComb (int amount) {
+    for (int i = 0; i < answerStruct->numberCombinations; ++i) {
+        printOneComb(*(answerStruct->combinations + i), amount);
+    }
+    printf("\n\n");
 }
 
 int main() {
@@ -89,8 +164,14 @@ int main() {
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex1, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    answerStruct = fillCombArrays(answer, amount, coins_ex1, coinsSize);
+    printf("Answer:   %d\n", answer);
+    printf("Combinations:\n");
+    printAllComb(amount);
 
+    free(tabuArray);
+    free(answerStruct->combinations);
+    free(answerStruct);
     amount = 3;
     int coins_ex2[] = {2};
     coinsSize = 1;
@@ -102,6 +183,7 @@ int main() {
     answer = change(amount, coins_ex2, coinsSize);
     printf("Answer:   %d\n\n", answer);
 
+    free(tabuArray);
     amount = 10;
     int coins_ex3[] = {10};
     coinsSize = 1;
@@ -110,54 +192,61 @@ int main() {
     printarr(coins_ex3, coinsSize);
     printf("Expected: %d\n", expected);
 
-    
     answer = change(amount, coins_ex3, coinsSize);
+    answerStruct = fillCombArrays(answer, amount, coins_ex3, coinsSize);
     printf("Answer:   %d\n\n", answer);
+    printf("Combinations:\n");
+    printAllComb(amount);
 
+    free(tabuArray);
+    free(answerStruct->combinations);
+    free(answerStruct);
     amount = 500;
     int coins_ex4[] = {3,5,7,8,9,10,11};
     coinsSize = 7;
     expected = 35502874; 
-    printf("Test 5: amount = %d, coins = ", amount);
+    printf("Test 4: amount = %d, coins = ", amount);
     printarr(coins_ex4, coinsSize);
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex4, coinsSize);
     printf("Answer:   %d\n\n", answer);
 
-    amount = 4681;
-    int coins_ex5[] = {2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,
-                       36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,
-                       68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,
-                       100,102,104,106,108,110,112,114,116,118,120,122,
-                       124,126,128,130,132,134,136,138,140,142,144,146,
-                       148,150,152,154,156,158,160,162,164,166,168,170,
-                       172,174,176,178,180,182,184,186,188,190,192,194,
-                       196,198,200,202,204,206,208,210,212,214,216,218,
-                       220,222,224,226,228,230,232,234,236,238,240,242,
-                       244,246,248,250,252,254,256,258,260,262,264,266,
-                       268,270,272,274,276,278,280,282,284,286,288,290,
-                       292,294,296,298,300,302,304,306,308,310,312,314,
-                       316,318,320,322,324,326,328,330,332,334,336,338,
-                       340,342,344,346,348,350,352,354,356,358,360,362,
-                       364,366,368,370,372,374,376,378,380,382,384,386,
-                       388,390,392,394,396,398,400,402,404,406,408,410,
-                       412,414,416,418,420,422,424,426,428,430,432,434,
-                       436,438,440,442,444,446,448,450,452,454,456,458,
-                       460,462,464,466,468,470,472,474,476,478,480,482,
-                       484,486,488,490,492,494,496,498,500,502,504,506,
-                       508,510,512,514,516,518,520,522,524,526,528,530,
-                       532,534,536,538,540,542,544,546,548,550,552,554,
-                       556,558,560,562,564,566,568,570,572,574,576,578,
-                       580,582,584,586,588,780,936,1170,1560,2340,4680};
-    coinsSize = 300;
-    expected = 0;
-    printf("Test 6: amount = %d, coins = ", amount);
+    free(tabuArray);
+    amount = 500;
+    int coins_ex5[] = {1,2,5,10,100};
+    coinsSize = 5;
+    expected = 400331; 
+    printf("Test 5: amount = %d, coins = ", amount);
     printarr(coins_ex5, coinsSize);
     printf("Expected: %d\n", expected);
 
     answer = change(amount, coins_ex5, coinsSize);
-    printf("Answer:   %d\n", answer);    
+    printf("Answer:   %d\n\n", answer);
 
+    free(tabuArray);
+    amount = 50;
+    int coins_ex6[] = {1,2,5,10};
+    coinsSize = 4;
+    expected = 341; 
+    printf("Test 6: amount = %d, coins = ", amount);
+    printarr(coins_ex6, coinsSize);
+    printf("Expected: %d\n", expected);
+
+    answer = change(amount, coins_ex6, coinsSize);
+    printf("Answer:   %d\n", answer);
+
+    free(tabuArray);
+    amount = 7;
+    int coins_ex7[] = {1,2,5,10};
+    coinsSize = 4;
+    expected = 6; 
+    printf("Test 7: amount = %d, coins = ", amount);
+    printarr(coins_ex7, coinsSize);
+    printf("Expected: %d\n", expected);
+
+    answer = change(amount, coins_ex6, coinsSize);
+    printf("Answer:   %d\n", answer);
+    printf("Combinations:\n");
 }
 
