@@ -104,6 +104,8 @@ int change(int amount, int* coins, int coinsSize) {
 }
 
 coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int coinsSize) {
+    int sumOfCoins = 0;
+    
     int rows = numberCombinations;
     int cols = amount;
     int** combArray = (int**)calloc(rows, sizeof(int*));
@@ -111,13 +113,14 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
         combArray[i] = (int*)calloc(cols, sizeof(int));
     }
 
-    uint64_t amountColumn = amount;
+    int remainingCombinations = numberCombinations;
+    const uint64_t amountColumn = amount;
     int changeGroupPos = 0;
     int changeGroup = 0;
     
     int i_ChangeGroup = 0;
     uint64_t i_row = coinsSize; 
-    while(i_ChangeGroup < numberCombinations) {
+    while(i_ChangeGroup < remainingCombinations) {
         uint64_t currentChangeGroupCount = *(*(tabuArray + i_row) + amountColumn);
         uint64_t belowChangeGroupCount = i_row - 1 > 0 ? *(*(tabuArray + i_row - 1) + amountColumn) : 0;
         uint64_t numberGroupWithCurrentDenomMax = currentChangeGroupCount - belowChangeGroupCount;
@@ -129,6 +132,16 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
         i_ChangeGroup += numberGroupWithCurrentDenomMax;
         changeGroup += numberGroupWithCurrentDenomMax;
         --i_row;
+    }
+
+    int doneGroups = 0;
+    for(int i = 0; i < numberCombinations; ++i) {
+        sumOfCoins = 0;
+        for(int j = 0; j < amount && *(*(combArray + i) + j) != 0; ++j) {
+            sumOfCoins += *(*(combArray + i) + j);
+        }
+
+        doneGroups += sumOfCoins == amount? 1 : 0;
     }
 
     coinChange* answerStruct = malloc(sizeof(coinChange));
