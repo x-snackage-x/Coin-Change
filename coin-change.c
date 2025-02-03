@@ -49,6 +49,14 @@ void printOneComb(int *arr, int size) {
     }
 }
 
+int sumArray(int* array, int size) {
+    int sum = 0;
+    for(int i = 0; i < size && array[i] != 0; ++i) {
+        sum += *(array + i);
+    }
+    return sum;
+}
+
 void allocateTabuArray(int rows, int cols) {
     tabuArray = (uint64_t**)calloc(rows, sizeof(uint64_t*));
     for(uint64_t i = 0; i < rows; i++) {
@@ -129,19 +137,33 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
             *(*(combArray + changeGroup + i) + changeGroupPos) = *(coins + i_row - 1);
         }
 
+        int doneGroups = 0;
+        int denomListIdx = 1;
+        while(doneGroups < numberGroupWithCurrentDenomMax) {
+            for(int i = 0; i < numberGroupWithCurrentDenomMax; ++i) {
+                int sumCurArray = sumArray(*(combArray + changeGroup + i), amount);
+                if(sumCurArray == amount) {
+                    ++doneGroups;
+                    continue;
+                }
+
+                uint64_t amountIdx = amountColumn - sumCurArray;
+                uint64_t denomIdx = i_row - i;
+                uint64_t currentChangeGroupCount_j = *(*(tabuArray + denomIdx) + amountIdx);
+                uint64_t belowChangeGroupCount_j = i_row - 1 > 0 ? *(*(tabuArray + denomIdx - 1) + amountIdx) : 0;
+                uint64_t numberGroupWithCurrentDenomMax_j = currentChangeGroupCount_j - belowChangeGroupCount_j;
+
+                for(int j = 0; j < numberGroupWithCurrentDenomMax_j; ++j) {
+                    int coinDenom = *(coins + denomIdx - 1);
+                    *(*(combArray + changeGroup + j + i) + changeGroupPos + denomListIdx) = coinDenom;
+                }
+            }
+            ++denomListIdx;
+        }
+
         i_ChangeGroup += numberGroupWithCurrentDenomMax;
         changeGroup += numberGroupWithCurrentDenomMax;
         --i_row;
-    }
-
-    int doneGroups = 0;
-    for(int i = 0; i < numberCombinations; ++i) {
-        sumOfCoins = 0;
-        for(int j = 0; j < amount && *(*(combArray + i) + j) != 0; ++j) {
-            sumOfCoins += *(*(combArray + i) + j);
-        }
-
-        doneGroups += sumOfCoins == amount? 1 : 0;
     }
 
     coinChange* answerStruct = malloc(sizeof(coinChange));
