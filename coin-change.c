@@ -37,11 +37,16 @@ void printOneComb(int *arr, int size) {
 
     for(int i = 0; i <= size; i++) {
         if(size == 1) {
-            printf("[%i]\n", arr[i]);
+            printf("[%i] = %i\n", arr[i], arr[i]);
         } else if(i == 0) {
             printf("[%i", arr[i]);
         } else if(i == size || arr[i] == 0) {
-            printf("]\n");
+            printf("] = ");
+            int sum = 0;
+            for(int j = 0; j <= i; j++) {
+                sum += arr[j];
+            }
+            printf("%i\n", sum);
             return;
         } else {
             printf(", %i", arr[i]);
@@ -140,29 +145,36 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
         for(int i = 0; i < numberGroupWithCurrentDenomMax; ++i) {
             *(*(combArray + changeGroup + i) + changeGroupPos) = *(coins + i_row - 1);
         }
-
-        int doneGroups = 0;
+        
+        int* doneIndexes = (int*)calloc(numberGroupWithCurrentDenomMax, sizeof(int));
+        int doneGroupsCount = 0;
         int denomListIdx = 1;
-        int lastDenomPutInGroup = *(coins + i_row - 1);
-        while(doneGroups < numberGroupWithCurrentDenomMax) {
-            for(int i = 0; i < numberGroupWithCurrentDenomMax 
-                    && doneGroups != numberGroupWithCurrentDenomMax; ++i) {
+        while(doneGroupsCount < numberGroupWithCurrentDenomMax) {
+            uint64_t denomIdxBase = 0;
+            for(int i = 0; i < numberGroupWithCurrentDenomMax;) {
+                if(*(doneIndexes + i) == 1) {
+                    ++i;
+                    continue;
+                }
                 int sumCurArray = sumArray(*(combArray + changeGroup + i), amount);
                 if(sumCurArray == amount) {
-                    ++doneGroups;
+                    *(doneIndexes + i) = 1;
+                    ++doneGroupsCount;
+                    ++i;
                     continue;
                 }
 
                 uint64_t amountIdx = amountColumn - sumCurArray;
-                uint64_t denomIdxBase = 0;
                 for(int k = coinsSize - 1; denomIdxBase == 0; --k){
                     denomIdxBase = *(coins + k) > amountIdx? 0 : k + 1;
                 }
-                while(*(coins + denomIdxBase - 1) > lastDenomPutInGroup) {
-                    --denomIdxBase;
-                }
 
-                uint64_t denomIdx = denomIdxBase != 1? denomIdxBase - i : denomIdxBase;
+                uint64_t denomIdx = denomIdxBase;
+                int lastDenomPutInGroup = *(*(combArray + changeGroup + i) + changeGroupPos + denomListIdx - 1);
+                while(*(coins + denomIdx - 1) > lastDenomPutInGroup) {
+                    --denomIdxBase;
+                    denomIdx = denomIdxBase;
+                }
 
                 uint64_t currentChangeGroupCount_j = *(*(tabuArray + denomIdx) + amountIdx);
                 uint64_t belowChangeGroupCount_j = *(*(tabuArray + denomIdx - 1) + amountIdx);
@@ -170,13 +182,16 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
 
                 for(int j = 0; j < numberGroupWithCurrentDenomMax_j; ++j) {
                     int coinDenom = *(coins + denomIdx - 1);
-                    lastDenomPutInGroup = coinDenom;
                     *(*(combArray + changeGroup + j + i) + changeGroupPos + denomListIdx) = coinDenom;
                 }
+
+                i += numberGroupWithCurrentDenomMax_j;
+                --denomIdxBase;
             }
+ 
             ++denomListIdx;
         }
-
+        free(doneIndexes);
         i_ChangeGroup += numberGroupWithCurrentDenomMax;
         changeGroup += numberGroupWithCurrentDenomMax;
         --i_row;
@@ -286,7 +301,7 @@ int main() {
     amount = 25;
     int coins_ex6[] = {1,2,5,10};
     coinsSize = 4;
-    expected = 64; 
+    expected = 64;
     printf("Test 6: amount = %d, coins = ", amount);
     printarr(coins_ex6, coinsSize);
     printf("Expected: %d\n", expected);
