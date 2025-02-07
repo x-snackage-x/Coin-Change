@@ -299,9 +299,9 @@ int main() {
     free(tabuArray);
     
     amount = 25;
-    int coins_ex6[] = {1,2,5,10};
-    coinsSize = 4;
-    expected = 64;
+    int coins_ex6[] = {2,5,10};
+    coinsSize = 3;
+    expected = 6;
     printf("Test 6: amount = %d, coins = ", amount);
     printarr(coins_ex6, coinsSize);
     printf("Expected: %d\n", expected);
@@ -324,7 +324,7 @@ int main() {
     printarr(coins_ex7, coinsSize);
     printf("Expected: %d\n", expected);
 
-    answer = change(amount, coins_ex6, coinsSize);
+    answer = change(amount, coins_ex7, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex7, coinsSize);
     printf("Answer:   %d\n", answer);
     printf("Combinations:\n");
