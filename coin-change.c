@@ -69,6 +69,13 @@ void allocateTabuArray(int rows, int cols) {
     }
 }
 
+void free2DArray(uint64_t** tabuArray, int rows) {
+    for(int i = 0; i < rows; ++i) {
+        free(*(tabuArray + i));
+    }
+    free(tabuArray);
+}
+
 int changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
     if((amount == *coins && amount == *(coins + coinsSize - 1)) || amount == 0) {
@@ -232,8 +239,8 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    free(tabuArray);
-    free(answerStruct->combinations);
+    free2DArray(tabuArray, coinsSize + 1);
+    free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
     
     amount = 3;
@@ -250,8 +257,8 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    free(tabuArray);
-    free(answerStruct->combinations);
+    free2DArray(tabuArray, coinsSize + 1);
+    free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
     
     amount = 10;
@@ -268,8 +275,8 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    free(tabuArray);
-    free(answerStruct->combinations);
+    free2DArray(tabuArray, coinsSize + 1);
+    free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
     
     amount = 500;
@@ -312,8 +319,8 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    free(tabuArray);
-    free(answerStruct->combinations);
+    free2DArray(tabuArray, coinsSize + 1);
+    free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
 
     amount = 7;
@@ -330,8 +337,8 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    free(tabuArray);
-    free(answerStruct->combinations);
+    free2DArray(tabuArray, coinsSize + 1);
+    free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
 }
 
