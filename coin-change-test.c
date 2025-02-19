@@ -10,15 +10,15 @@ int main() {
     int amount = 5;
     int coins_ex1[] = {1,2,5};
     int coinsSize = 3;
-    int expected = 4; 
-    int answer = 0;
+    uint64_t expected = 4; 
+    uint64_t answer = 0;
     printf("Test 1: amount = %d, coins = ", amount);
     printarr(coins_ex1, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex1, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex1, coinsSize);
-    printf("Answer:   %d\n", answer);
+    printf("Answer: %" PRIu64 "\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 
@@ -32,11 +32,11 @@ int main() {
     expected = 0; 
     printf("Test 2: amount = %d, coins = ", amount);
     printarr(coins_ex2, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex2, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex2, coinsSize);
-    printf("Answer:   %d\n", answer);
+    printf("Answer: %" PRIu64 "\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 
@@ -50,11 +50,11 @@ int main() {
     expected = 1; 
     printf("Test 3: amount = %d, coins = ", amount);
     printarr(coins_ex3, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex3, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex3, coinsSize);
-    printf("Answer:   %d\n", answer);
+    printf("Answer: %" PRIu64 "\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 
@@ -68,23 +68,23 @@ int main() {
     expected = 35502874; 
     printf("Test 4: amount = %d, coins = ", amount);
     printarr(coins_ex4, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex4, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    printf("Answer: %" PRIu64 "\n\n", answer);
 
     free(tabuArray);
     
-    amount = 500;
-    int coins_ex5[] = {1,2,5,10,100};
-    coinsSize = 5;
-    expected = 400331; 
+    amount = 10000;
+    int coins_ex5[] = {1,2,5,10,20,50,100,500,1000};
+    coinsSize = 9;
+    expected = 924906775148246; 
     printf("Test 5: amount = %d, coins = ", amount);
     printarr(coins_ex5, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex5, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    printf("Answer: %" PRIu64 "\n\n", answer);
 
     free(tabuArray);
     
@@ -94,11 +94,11 @@ int main() {
     expected = 6;
     printf("Test 6: amount = %d, coins = ", amount);
     printarr(coins_ex6, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex6, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex6, coinsSize);
-    printf("Answer:   %d\n\n", answer);
+    printf("Answer: %" PRIu64 "\n\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 
@@ -112,11 +112,11 @@ int main() {
     expected = 6; 
     printf("Test 7: amount = %d, coins = ", amount);
     printarr(coins_ex7, coinsSize);
-    printf("Expected: %d\n", expected);
+    printf("Expected: %" PRIu64 "\n", expected);
 
     answer = change(amount, coins_ex7, coinsSize);
     answerStruct = fillCombArrays(answer, amount, coins_ex7, coinsSize);
-    printf("Answer:   %d\n", answer);
+    printf("Answer: %" PRIu64 "\n", answer);
     printf("Combinations:\n");
     printAllComb(amount);
 

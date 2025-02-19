@@ -68,7 +68,7 @@ void free2DArray(uint64_t** tabuArray, int rows) {
     free(tabuArray);
 }
 
-int changeRecursive(int amount, int* coins, int coinsSize) {
+uint64_t changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
     if((amount == *coins && amount == *(coins + coinsSize - 1)) || amount == 0) {
         return 1;
@@ -77,14 +77,14 @@ int changeRecursive(int amount, int* coins, int coinsSize) {
     }
 
     // include Branch
-    int returnIncludeBranch = changeRecursive(amount - *(coins + coinsSize - 1), coins, coinsSize);    
+    uint64_t returnIncludeBranch = changeRecursive(amount - *(coins + coinsSize - 1), coins, coinsSize);    
     // exclude Branch
-    int returnExcludeBranch = changeRecursive(amount, coins, coinsSize - 1);
+    uint64_t returnExcludeBranch = changeRecursive(amount, coins, coinsSize - 1);
 
     return returnExcludeBranch + returnIncludeBranch;                               
 }
 
-int change(int amount, int* coins, int coinsSize) {
+uint64_t change(int amount, int* coins, int coinsSize) {
     const uint64_t cols = amount + 1;
     const uint64_t rows = coinsSize + 1;
     allocateTabuArray(rows, cols);
@@ -110,7 +110,7 @@ int change(int amount, int* coins, int coinsSize) {
         }
     }
     
-    int sum = *(*(tabuArray + coinsSize) + amount);
+    uint64_t sum = *(*(tabuArray + coinsSize) + amount);
 
     return sum;
 }
