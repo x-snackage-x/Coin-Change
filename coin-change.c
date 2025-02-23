@@ -3,7 +3,7 @@
 
 #include "coin-change.h"
 
-void printarr(int *arr, int size) {
+void printarr(int* arr, int size) {
     if(size == 0) {
         printf("[]\n");
     }

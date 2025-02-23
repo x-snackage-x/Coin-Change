@@ -9,8 +9,9 @@ coinChange* answerStruct = NULL;
 uint64_t** tabuArray = NULL;
 
 typedef struct {
-    int coinsSize;
     int inputOK;
+    int coinsSize;
+    int* coins;
 } parseCoinsStruct;
 
 int integerPower(int base, int exponant) {
@@ -22,16 +23,16 @@ int integerPower(int base, int exponant) {
     return r;
 }
 
-parseCoinsStruct* parseCoinsInput(char* coinInput, int* coins) {
+parseCoinsStruct* parseCoinsInput(char* coinInput) {
     parseCoinsStruct* parseReturn = malloc(sizeof(parseCoinsStruct));
 
     // count coins && varify input
     int lastPosition = 0;
-    int closingBracket = 0;
     parseReturn->inputOK = 1;
     parseReturn->coinsSize = 0;
     if(*coinInput != '[') {
         parseReturn->inputOK = 0;
+        printf("Missing [\n");
     }
     
     for(int i = 1; i < max_input_length && parseReturn->inputOK == 1; ++i) {
@@ -41,21 +42,28 @@ parseCoinsStruct* parseCoinsInput(char* coinInput, int* coins) {
             ++(parseReturn->coinsSize);
         } else if(curChar == ']' && prevChar >= '0' && prevChar <= '9') {
             ++(parseReturn->coinsSize);
-            closingBracket = 1;
             lastPosition = i;
             break;
         }
         
+        if(curChar == 0) {
+            parseReturn->inputOK = -3;
+            printf("Missing ]\n");
+            break;           
+        }
+
         if(!(curChar == ']' || curChar == ',' 
             || (curChar >= '0' && curChar <= '9'))) {
             parseReturn->inputOK = -1;
             printf("Illegal Character: %c\n", curChar);
             break;
         }
-    }
 
-    if(closingBracket == 0 && parseReturn->inputOK == 1) {
-        parseReturn->inputOK = -2;
+        if(prevChar == ',' && (curChar == ',' || curChar == ']')) {
+            parseReturn->inputOK = -2;
+            printf("Missing Number\n");
+            break;           
+        }
     }
 
     if (parseReturn->inputOK != 1) {
@@ -63,7 +71,7 @@ parseCoinsStruct* parseCoinsInput(char* coinInput, int* coins) {
     }
     
     // fill parse input
-    coins = malloc(parseReturn->coinsSize * sizeof(int));
+    parseReturn->coins = malloc(parseReturn->coinsSize * sizeof(int));
     int numberLength = 0;
     int coinIndex = 0;
     for(int i = 1; i <= lastPosition; ++i) {
@@ -75,12 +83,12 @@ parseCoinsStruct* parseCoinsInput(char* coinInput, int* coins) {
                 currentCoin += currentDigit * integerPower(10, j - 1);
             }
             numberLength = 0;
-            *(coins + coinIndex++) = currentCoin; 
+            *(parseReturn->coins + coinIndex++) = currentCoin; 
         } else {
             ++numberLength;
         }  
     }
-    printarr(coins, parseReturn->coinsSize);
+
     return parseReturn;
 }
 
@@ -96,20 +104,18 @@ int main() {
     fflush(stdout);
     scanf("%d", &amount);
 
-    printf("Input coins as [coin1,coin2,...]: ");
+    printf("Input ordered coins as [c-1,c-2,...]: ");
     fflush(stdout);
     scanf("%9999s", coinInput);
 
-    parseCoinsStruct* parseReturn = parseCoinsInput(coinInput, coins);
+    parseCoinsStruct* parseReturn = parseCoinsInput(coinInput);
     if(parseReturn->inputOK != 1) {
-        printf("Coin Input format error. Code: %d\n",parseReturn->inputOK);
         return 0;
     }
     coinsSize = parseReturn->coinsSize;
+    coins = parseReturn->coins;
     free(parseReturn);
-
-    printf("amount = %d, coins = ", amount);
-    printarr(coins, coinsSize);
+    printf("\n");
 
     combinationsCount = change(amount, coins, coinsSize);    
     printf("Answer: %" PRIu64 "\n\n", combinationsCount);
@@ -119,9 +125,10 @@ int main() {
             fillCombArrays(combinationsCount, amount, coins, coinsSize);
         printf("Combinations:\n");
         printAllComb(amount);
+        
+        free2DArray((uint64_t**)answerStruct->combinations, combinationsCount);
+        free(answerStruct);
     }
 
     free2DArray(tabuArray, coinsSize + 1);
-    free2DArray((uint64_t**)answerStruct->combinations, combinationsCount);
-    free(answerStruct);
 }
