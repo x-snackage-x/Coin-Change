@@ -21,7 +21,7 @@ void printarr(int* arr, int size) {
     }
 }
 
-void printOneComb(int *arr, int size) {
+void printOneComb(int* arr, int size) {
     if(size == 0) {
         printf("[]\n");
         return;
@@ -35,7 +35,7 @@ void printOneComb(int *arr, int size) {
         } else if(i == size || arr[i] == 0) {
             printf("] = ");
             int sum = 0;
-            for(int j = 0; j <= i; j++) {
+            for(int j = 0; j < i; j++) {
                 sum += arr[j];
             }
             printf("%i\n", sum);
@@ -70,18 +70,21 @@ void free2DArray(uint64_t** tabuArray, int rows) {
 
 uint64_t changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
-    if((amount == *coins && amount == *(coins + coinsSize - 1)) || amount == 0) {
+    if((amount == *coins && amount == *(coins + coinsSize - 1)) ||
+       amount == 0) {
         return 1;
     } else if(amount < 0 || coinsSize < 1) {
         return 0;
     }
 
     // include Branch
-    uint64_t returnIncludeBranch = changeRecursive(amount - *(coins + coinsSize - 1), coins, coinsSize);    
+    uint64_t returnIncludeBranch =
+        changeRecursive(amount - *(coins + coinsSize - 1), coins, coinsSize);
     // exclude Branch
-    uint64_t returnExcludeBranch = changeRecursive(amount, coins, coinsSize - 1);
+    uint64_t returnExcludeBranch =
+        changeRecursive(amount, coins, coinsSize - 1);
 
-    return returnExcludeBranch + returnIncludeBranch;                               
+    return returnExcludeBranch + returnIncludeBranch;
 }
 
 uint64_t change(int amount, int* coins, int coinsSize) {
@@ -109,15 +112,18 @@ uint64_t change(int amount, int* coins, int coinsSize) {
             }
         }
     }
-    
+
     uint64_t sum = *(*(tabuArray + coinsSize) + amount);
 
     return sum;
 }
 
-coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int coinsSize) {
+coinChange* fillCombArrays(int numberCombinations,
+                           int amount,
+                           int* coins,
+                           int coinsSize) {
     int sumOfCoins = 0;
-    
+
     int rows = numberCombinations;
     int cols = amount;
     int** combArray = (int**)calloc(rows, sizeof(int*));
@@ -129,7 +135,7 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
     const uint64_t amountColumn = amount;
     int changeGroupPos = 0;
     int changeGroup = 0;
-    
+
     int i_ChangeGroup = 0;
     uint64_t i_row = coinsSize;
     while(*(coins + i_row - 1) > amount) {
@@ -137,15 +143,20 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
     }
 
     while(i_ChangeGroup < remainingCombinations) {
-        uint64_t currentChangeGroupCount = *(*(tabuArray + i_row) + amountColumn);
-        uint64_t belowChangeGroupCount = i_row - 1 > 0 ? *(*(tabuArray + i_row - 1) + amountColumn) : 0;
-        uint64_t numberGroupWithCurrentDenomMax = currentChangeGroupCount - belowChangeGroupCount;
+        uint64_t currentChangeGroupCount =
+            *(*(tabuArray + i_row) + amountColumn);
+        uint64_t belowChangeGroupCount =
+            i_row - 1 > 0 ? *(*(tabuArray + i_row - 1) + amountColumn) : 0;
+        uint64_t numberGroupWithCurrentDenomMax =
+            currentChangeGroupCount - belowChangeGroupCount;
 
         for(int i = 0; i < numberGroupWithCurrentDenomMax; ++i) {
-            *(*(combArray + changeGroup + i) + changeGroupPos) = *(coins + i_row - 1);
+            *(*(combArray + changeGroup + i) + changeGroupPos) =
+                *(coins + i_row - 1);
         }
-        
-        int* doneIndexes = (int*)calloc(numberGroupWithCurrentDenomMax, sizeof(int));
+
+        int* doneIndexes =
+            (int*)calloc(numberGroupWithCurrentDenomMax, sizeof(int));
         int doneGroupsCount = 0;
         int denomListIdx = 1;
         while(doneGroupsCount < numberGroupWithCurrentDenomMax) {
@@ -155,7 +166,8 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
                     ++i;
                     continue;
                 }
-                int sumCurArray = sumArray(*(combArray + changeGroup + i), amount);
+                int sumCurArray =
+                    sumArray(*(combArray + changeGroup + i), amount);
                 if(sumCurArray == amount) {
                     *(doneIndexes + i) = 1;
                     ++doneGroupsCount;
@@ -164,30 +176,35 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
                 }
 
                 uint64_t amountIdx = amountColumn - sumCurArray;
-                for(int k = coinsSize - 1; denomIdxBase == 0; --k){
-                    denomIdxBase = *(coins + k) > amountIdx? 0 : k + 1;
+                for(int k = coinsSize - 1; denomIdxBase == 0; --k) {
+                    denomIdxBase = *(coins + k) > amountIdx ? 0 : k + 1;
                 }
 
                 uint64_t denomIdx = denomIdxBase;
-                int lastDenomPutInGroup = *(*(combArray + changeGroup + i) + changeGroupPos + denomListIdx - 1);
+                int lastDenomPutInGroup = *(*(combArray + changeGroup + i) +
+                                            changeGroupPos + denomListIdx - 1);
                 while(*(coins + denomIdx - 1) > lastDenomPutInGroup) {
                     --denomIdxBase;
                     denomIdx = denomIdxBase;
                 }
 
-                uint64_t currentChangeGroupCount_j = *(*(tabuArray + denomIdx) + amountIdx);
-                uint64_t belowChangeGroupCount_j = *(*(tabuArray + denomIdx - 1) + amountIdx);
-                uint64_t numberGroupWithCurrentDenomMax_j = currentChangeGroupCount_j - belowChangeGroupCount_j;
+                uint64_t currentChangeGroupCount_j =
+                    *(*(tabuArray + denomIdx) + amountIdx);
+                uint64_t belowChangeGroupCount_j =
+                    *(*(tabuArray + denomIdx - 1) + amountIdx);
+                uint64_t numberGroupWithCurrentDenomMax_j =
+                    currentChangeGroupCount_j - belowChangeGroupCount_j;
 
                 for(int j = 0; j < numberGroupWithCurrentDenomMax_j; ++j) {
                     int coinDenom = *(coins + denomIdx - 1);
-                    *(*(combArray + changeGroup + j + i) + changeGroupPos + denomListIdx) = coinDenom;
+                    *(*(combArray + changeGroup + j + i) + changeGroupPos +
+                      denomListIdx) = coinDenom;
                 }
 
                 i += numberGroupWithCurrentDenomMax_j;
                 --denomIdxBase;
             }
- 
+
             ++denomListIdx;
         }
         free(doneIndexes);
@@ -198,7 +215,7 @@ coinChange* fillCombArrays(int numberCombinations, int amount, int* coins, int c
 
     coinChange* answerStruct = malloc(sizeof(coinChange));
     answerStruct->numberCombinations = numberCombinations;
-    answerStruct->combinations = combArray; 
+    answerStruct->combinations = combArray;
 
     return answerStruct;
 }
@@ -214,4 +231,3 @@ void printAllComb(int amount) {
     }
     printf("\n\n");
 }
-
