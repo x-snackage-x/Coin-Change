@@ -131,4 +131,10 @@ int main() {
     }
 
     free2DArray(tabuArray, coinsSize + 1);
+
+    getchar();
+    fflush(stdin);
+    printf("Press any key to continue");
+    getchar();
+    return 0;
 }

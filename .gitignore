@@ -2,3 +2,6 @@
 *.exe
 *.e
 coin-change
+
+build/
+Debug/
