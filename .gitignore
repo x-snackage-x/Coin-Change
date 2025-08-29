@@ -1,7 +1,9 @@
 .vscode/
+*.o
 *.exe
 *.e
-coin-change
+*.hi
 
 build/
+executables/
 Debug/

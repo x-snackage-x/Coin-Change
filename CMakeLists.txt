@@ -12,5 +12,5 @@ else()
 endif()
 
 add_executable(coin-change coin-change-cli.c coin-change.c)
-add_executable(coin-change-test coin-change-test.c coin-change.c)
+add_executable(coin-change-c coin-change-c.c coin-change.c)
 
