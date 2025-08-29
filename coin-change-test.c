@@ -120,11 +120,6 @@ int main() {
     printf("Combinations:\n");
     printAllComb(amount);
 
-    getchar();
-    fflush(stdin);
-    printf("Press any key to continue");
-    getchar();
-
     free2DArray(tabuArray, coinsSize + 1);
     free2DArray((uint64_t**)answerStruct->combinations, answer);
     free(answerStruct);
