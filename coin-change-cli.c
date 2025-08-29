@@ -4,6 +4,7 @@
 #include "coin-change.h"
 #define max_input_length 10000
 #define printLimit 30
+#define PROCEDURAL
 
 coinChange* answerStruct = NULL;
 uint64_t** tabuArray = NULL;
@@ -26,7 +27,7 @@ int integerPower(int base, int exponant) {
 parseCoinsStruct* parseCoinsInput(char* coinInput) {
     parseCoinsStruct* parseReturn = malloc(sizeof(parseCoinsStruct));
 
-    // count coins && varify input
+    // count coins && verify input
     int lastPosition = 0;
     parseReturn->inputOK = 1;
     parseReturn->coinsSize = 0;
@@ -117,9 +118,15 @@ int main() {
     free(parseReturn);
     printf("\n");
 
+#ifdef RECURSIVE
+    combinationsCount = changeRecursive(amount, coins, coinsSize);
+#else
     combinationsCount = change(amount, coins, coinsSize);
+#endif
+
     printf("Answer: %" PRIu64 "\n\n", combinationsCount);
 
+#ifdef PROCEDURAL
     if(combinationsCount <= printLimit) {
         answerStruct =
             fillCombArrays(combinationsCount, amount, coins, coinsSize);
@@ -129,12 +136,8 @@ int main() {
         free2DArray((uint64_t**)answerStruct->combinations, combinationsCount);
         free(answerStruct);
     }
-
     free2DArray(tabuArray, coinsSize + 1);
+#endif
 
-    getchar();
-    fflush(stdin);
-    printf("Press any key to continue");
-    getchar();
     return 0;
 }

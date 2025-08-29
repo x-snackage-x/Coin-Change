@@ -70,8 +70,7 @@ void free2DArray(uint64_t** tabuArray, int rows) {
 
 uint64_t changeRecursive(int amount, int* coins, int coinsSize) {
     // base case
-    if((amount == *coins && amount == *(coins + coinsSize - 1)) ||
-       amount == 0) {
+    if(amount == *coins || amount == 0) {
         return 1;
     } else if(amount < 0 || coinsSize < 1) {
         return 0;
