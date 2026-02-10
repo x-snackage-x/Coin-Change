@@ -46,7 +46,7 @@ Combinations:
 [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] = 31
 ```
 
-If the number of combinations is over 30 only they will not be printed.
+If the number of combinations is over 30 only the Answer will be printed.
 
 ```
 wd$ ./coin-change-cli.e
